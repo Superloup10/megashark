@@ -2,6 +2,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\I18n\Time;
 
 /**
  * Rooms Controller
@@ -35,10 +36,13 @@ class RoomsController extends AppController
      */
     public function view($id = null)
     {
-        $room = $this->Rooms->get($id, [
-            'contain' => ['Showtimes']
-        ]);
-
+        $room = $this->Rooms->get($id);
+        $monday = new Time('monday this week');
+        $sunday = new Time('sunday this week');
+        
+        $showtimeList = $this->Rooms->Showtimes->find()->where(['room_id' => $id])->where(['start >=' => $monday])->where(['start <=' => $sunday]);
+        
+        $this->set('showtimeList', $showtimeList);
         $this->set('room', $room);
         $this->set('_serialize', ['room']);
     }
